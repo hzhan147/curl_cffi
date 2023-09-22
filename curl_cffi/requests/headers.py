@@ -31,7 +31,7 @@ def obfuscate_sensitive_headers(
     items: typing.Iterable[typing.Tuple[typing.AnyStr, typing.AnyStr]]
 ) -> typing.Iterator[typing.Tuple[typing.AnyStr, typing.AnyStr]]:
     for k, v in items:
-        if to_str(k.lower()) in SENSITIVE_HEADERS:
+        if to_str(k) in SENSITIVE_HEADERS:
             v = to_bytes_or_str("[secure]", match_type_of=v)
         yield k, v
 
@@ -49,7 +49,7 @@ def normalize_header_key(
     else:
         bytes_value = value.encode(encoding or "ascii")
 
-    return bytes_value.lower() if lower else bytes_value
+    return bytes_value if lower else bytes_value
 
 
 def normalize_header_value(
@@ -200,12 +200,12 @@ class Headers(typing.MutableMapping[str, str]):
         If `split_commas=True` is passed, then any comma separated header
         values are split into multiple return strings.
         """
-        get_header_key = key.lower().encode(self.encoding)
+        get_header_key = key.encode(self.encoding)
 
         values = [
             item_value.decode(self.encoding)
             for _, item_key, item_value in self._list
-            if item_key.lower() == get_header_key
+            if item_key == get_header_key
         ]
 
         if not split_commas:
@@ -232,7 +232,7 @@ class Headers(typing.MutableMapping[str, str]):
         If there are multiple headers with the same key, then we concatenate
         them with commas. See: https://tools.ietf.org/html/rfc7230#section-3.2.2
         """
-        normalized_key = key.lower().encode(self.encoding)
+        normalized_key = key.encode(self.encoding)
 
         items = [
             header_value.decode(self.encoding)
@@ -252,7 +252,7 @@ class Headers(typing.MutableMapping[str, str]):
         """
         set_key = key.encode(self._encoding or "utf-8")
         set_value = value.encode(self._encoding or "utf-8")
-        lookup_key = set_key.lower()
+        lookup_key = set_key
 
         found_indexes = [
             idx
@@ -273,12 +273,12 @@ class Headers(typing.MutableMapping[str, str]):
         """
         Remove the header `key`.
         """
-        del_key = key.lower().encode(self.encoding)
+        del_key = key.encode(self.encoding)
 
         pop_indexes = [
             idx
             for idx, (_, item_key, _) in enumerate(self._list)
-            if item_key.lower() == del_key
+            if item_key == del_key
         ]
 
         if not pop_indexes:
@@ -288,7 +288,7 @@ class Headers(typing.MutableMapping[str, str]):
             del self._list[idx]
 
     def __contains__(self, key: typing.Any) -> bool:
-        header_key = key.lower().encode(self.encoding)
+        header_key = key.encode(self.encoding)
         return header_key in [key for _, key, _ in self._list]
 
     def __iter__(self) -> typing.Iterator[typing.Any]:
