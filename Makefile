@@ -1,7 +1,7 @@
 .ONESHELL:
 SHELL := bash
-VERSION := 0.5.4
-CURL_VERSION := curl-7.84.0
+VERSION := 0.0.1
+CURL_VERSION := curl-8.1.1
 
 .preprocessed: curl_cffi/include/curl/curl.h curl_cffi/cacert.pem .so_downloaded
 	touch .preprocessed
@@ -15,7 +15,7 @@ $(CURL_VERSION):
 	tar -xf $(CURL_VERSION).tar.xz
 
 curl-impersonate-$(VERSION)/chrome/patches: $(CURL_VERSION)
-	curl -L "https://github.com/lwthiker/curl-impersonate/archive/refs/tags/v$(VERSION).tar.gz" \
+	curl -L "https://github.com/hzhan147/curl-impersonate/archive/refs/tags/v$(VERSION).tar.gz" \
 		-o "curl-impersonate-$(VERSION).tar.gz"
 	tar -xf curl-impersonate-$(VERSION).tar.gz
 
